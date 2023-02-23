@@ -1,3 +1,5 @@
+pub mod parser;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,25 +28,44 @@ pub struct Shorten {
 }
 
 impl Shorten {
-    fn new(url: &str) -> Self {
+    pub fn new(url: &str) -> Self {
         Self {
             url: format!("https://api.shrtco.de/v2/shorten?url={}", url),
         }
     }
 
-    async fn shorten_link(&self) -> Result<Links, Box<dyn std::error::Error>> {
+    pub async fn shortend_link(&self) -> Result<Links, Box<dyn std::error::Error>> {
         let response = reqwest::get(&self.url).await?.json().await?;
         Ok(response)
     }
+
+    pub async fn short_link(&self) -> String {
+        let shorten = Shorten::new(&self.url);
+        let links = shorten.shortend_link().await;
+        match links {
+            Ok(links) => links.result.short_link,
+            Err(_) => "".to_string(),
+        }
+    }
+    pub async fn long_link(&self) -> String {
+        let shorten = Shorten::new(&self.url);
+        let links = shorten.shortend_link().await;
+        match links {
+            Ok(links) => links.result.full_short_link,
+            Err(_) => "".to_string(),
+        }
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use crate::Shorten;
 
     #[tokio::test]
     async fn it_works() {
-        let shorten = Shorten::new("google.com");
-        let links = shorten.shorten_link().await;
-        println!("{}", links.unwrap().result.full_short_link);
+        println!(
+            "{}",
+            Shorten::new("https://www.google.com").short_link().await
+        );
     }
 }

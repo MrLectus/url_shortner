@@ -1,5 +1,5 @@
 [package]
-name = "url_shortner"
+name = "shorten"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,4 @@ serde = {version = "1.0.152", features = ["derive"]}
 serde_json = "1.0.93"
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
+clap = { version = "4.1.6", features = ["derive"] }
